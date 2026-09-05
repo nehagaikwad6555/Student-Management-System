@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f6ff;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        h1 {
+            color: #1f3c88;
+            font-size: 38px;
+        }
+
+        form {
+            background-color: white;
+            width: 400px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px #ccc;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #1f3c88;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 15px;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #162d66;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Add Student</h1>
+
+    <form method="POST" action="/add">
+
+        <input type="text" name="name" placeholder="Student Name" required>
+
+        <input type="email" name="email" placeholder="Email">
+
+        <input type="text" name="phone" placeholder="Phone Number">
+
+        <input type="text" name="course" placeholder="Course">
+
+        <input type="text" name="department" placeholder="Department">
+
+        <button type="submit">Save Student</button>
+
+    </form>
+
+    <br>
+
+    <a href="/">
+        <button>Back to Home</button>
+    </a>
+
+</body>
+</html>
