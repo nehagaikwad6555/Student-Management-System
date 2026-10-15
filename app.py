@@ -1,16 +1,33 @@
 from flask import Flask, render_template, request, redirect
-import mysql.connector
+import sqlite3
 
 app = Flask(__name__)
 
+DATABASE = "student_management.db"
+
 
 def get_db_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Neha@2101",
-        database="student_management"
-    )
+    db = sqlite3.connect(DATABASE)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def create_database():
+    db = get_db_connection()
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT,
+            phone TEXT,
+            course TEXT,
+            department TEXT
+        )
+    """)
+
+    db.commit()
+    db.close()
 
 
 @app.route("/")
@@ -28,20 +45,14 @@ def add_student():
         department = request.form["department"]
 
         db = get_db_connection()
-        cursor = db.cursor()
 
-        query = """
-        INSERT INTO students (name, email, phone, course, department)
-        VALUES (%s, %s, %s, %s, %s)
-        """
-
-        cursor.execute(
-            query,
+        db.execute("""
+            INSERT INTO students
             (name, email, phone, course, department)
-        )
+            VALUES (?, ?, ?, ?, ?)
+        """, (name, email, phone, course, department))
 
         db.commit()
-        cursor.close()
         db.close()
 
         return redirect("/")
@@ -52,29 +63,29 @@ def add_student():
 @app.route("/view")
 def view_students():
     db = get_db_connection()
-    cursor = db.cursor()
 
-    cursor.execute("SELECT * FROM students")
-    students = cursor.fetchall()
+    students = db.execute(
+        "SELECT * FROM students"
+    ).fetchall()
 
-    cursor.close()
     db.close()
 
-    return render_template("view_students.html", students=students)
+    return render_template(
+        "view_students.html",
+        students=students
+    )
 
 
 @app.route("/delete/<int:id>")
 def delete_student(id):
     db = get_db_connection()
-    cursor = db.cursor()
 
-    cursor.execute(
-        "DELETE FROM students WHERE id = %s",
+    db.execute(
+        "DELETE FROM students WHERE id = ?",
         (id,)
     )
 
     db.commit()
-    cursor.close()
     db.close()
 
     return redirect("/view")
@@ -83,7 +94,6 @@ def delete_student(id):
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
     db = get_db_connection()
-    cursor = db.cursor()
 
     if request.method == "POST":
         name = request.form["name"]
@@ -92,35 +102,26 @@ def edit_student(id):
         course = request.form["course"]
         department = request.form["department"]
 
-        query = """
-        UPDATE students
-        SET name=%s,
-            email=%s,
-            phone=%s,
-            course=%s,
-            department=%s
-        WHERE id=%s
-        """
-
-        cursor.execute(
-            query,
-            (name, email, phone, course, department, id)
-        )
+        db.execute("""
+            UPDATE students
+            SET name = ?,
+                email = ?,
+                phone = ?,
+                course = ?,
+                department = ?
+            WHERE id = ?
+        """, (name, email, phone, course, department, id))
 
         db.commit()
-        cursor.close()
         db.close()
 
         return redirect("/view")
 
-    cursor.execute(
-        "SELECT * FROM students WHERE id=%s",
+    student = db.execute(
+        "SELECT * FROM students WHERE id = ?",
         (id,)
-    )
+    ).fetchone()
 
-    student = cursor.fetchone()
-
-    cursor.close()
     db.close()
 
     return render_template(
@@ -134,14 +135,12 @@ def search_student():
     name = request.args.get("name", "")
 
     db = get_db_connection()
-    cursor = db.cursor()
 
-    query = "SELECT * FROM students WHERE name LIKE %s"
-    cursor.execute(query, ("%" + name + "%",))
+    students = db.execute(
+        "SELECT * FROM students WHERE name LIKE ?",
+        ("%" + name + "%",)
+    ).fetchall()
 
-    students = cursor.fetchall()
-
-    cursor.close()
     db.close()
 
     return render_template(
@@ -151,4 +150,5 @@ def search_student():
 
 
 if __name__ == "__main__":
+    create_database()
     app.run(host="0.0.0.0", port=5000)
