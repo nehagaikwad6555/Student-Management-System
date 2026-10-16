@@ -19,6 +19,7 @@
         form {
             background-color: white;
             width: 400px;
+            max-width: 85%;
             margin: auto;
             padding: 30px;
             border-radius: 12px;
@@ -27,6 +28,7 @@
 
         input {
             width: 90%;
+            box-sizing: border-box;
             padding: 12px;
             margin: 8px;
             border: 1px solid #ccc;
@@ -56,30 +58,49 @@
     <h1>Edit Student</h1>
 
     <form method="POST">
+        <input
+            type="text"
+            name="name"
+            placeholder="Student Name"
+            value="{{ student.name }}"
+            required
+        >
 
-        <input type="text" name="name"
-               value="{{ student[1] }}" required>
+        <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value="{{ student.email or '' }}"
+        >
 
-        <input type="email" name="email"
-               value="{{ student[2] }}">
+        <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            value="{{ student.phone or '' }}"
+        >
 
-        <input type="text" name="phone"
-               value="{{ student[3] }}">
+        <input
+            type="text"
+            name="course"
+            placeholder="Course"
+            value="{{ student.course or '' }}"
+        >
 
-        <input type="text" name="course"
-               value="{{ student[4] }}">
-
-        <input type="text" name="department"
-               value="{{ student[5] }}">
+        <input
+            type="text"
+            name="department"
+            placeholder="Department"
+            value="{{ student.department or '' }}"
+        >
 
         <button type="submit">Update Student</button>
-
     </form>
 
     <br>
 
     <a href="/view">
-        <button>Back to Students</button>
+        <button type="button">Back to Students</button>
     </a>
 
 </body>
