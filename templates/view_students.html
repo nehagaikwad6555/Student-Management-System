@@ -23,6 +23,7 @@
         input {
             padding: 12px;
             width: 280px;
+            max-width: 80%;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 16px;
@@ -115,15 +116,22 @@
             <td>{{ student.phone }}</td>
             <td>{{ student.course }}</td>
             <td>{{ student.department }}</td>
+
             <td>
                 <a href="/edit/{{ student.id }}">
                     <button type="button">Edit</button>
                 </a>
 
-                <a href="/delete/{{ student.id }}"
-                   onclick="return confirm('Are you sure you want to delete this student?');">
-                    <button type="button" class="delete">Delete</button>
-                </a>
+                <form
+                    method="POST"
+                    action="/delete/{{ student.id }}"
+                    onsubmit="return confirm('Are you sure you want to delete this student?');"
+                    style="display:inline;"
+                >
+                    <button type="submit" class="delete">
+                        Delete
+                    </button>
+                </form>
             </td>
         </tr>
         {% else %}
